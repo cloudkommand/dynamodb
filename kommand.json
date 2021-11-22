@@ -1,0 +1,82 @@
+{
+    "components": {
+        "table": {
+            "type": "ext",
+            "displayname": "CK DynamoDB Table",
+            "cloud": "AWS",
+            "download_folder": true,
+            "resources": ["AWS::dynamodb::table"],
+            "policy": {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Sid": "Vis",
+                    "Effect": "Allow",
+                    "Action": [
+                        "iam:PassRole",
+                        "dynamodb:*",
+                        "tag:GetResources",
+                        "ec2:DescribeVpcs",
+                        "ec2:DescribeSubnets",
+                        "ec2:DescribeSecurityGroups",
+                        "application-autoscaling:DeleteScalingPolicy",
+                        "application-autoscaling:DeregisterScalableTarget",
+                        "application-autoscaling:DescribeScalableTargets",
+                        "application-autoscaling:DescribeScalingActivities",
+                        "application-autoscaling:DescribeScalingPolicies",
+                        "application-autoscaling:PutScalingPolicy",
+                        "application-autoscaling:RegisterScalableTarget"
+                    ],
+                    "Resource": "*"
+                }]
+            },
+            "input": {
+                "type": "object",
+                "properties": {
+                    "pkey_name": {
+                        "type": "string",
+                        "description": "The name of the partition key for the table",
+                        "default": "pkey"
+                    },
+                    "pkey_type": {
+                        "type": "string",
+                        "enum": ["S", "N", "B"],
+                        "description": "An identifier for the partition key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
+                        "default": "S"
+                    },
+                    "skey_name": {
+                        "type": "string",
+                        "description": "The name of the sort key for the table"
+                    },
+                    "skey_type": {
+                        "type": "string",
+                        "enum": ["S", "N", "B"],
+                        "description": "An identifier for the sort key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
+                        "default": "S"
+                    }
+                }
+            },
+            "props": {
+                "arn": {
+                    "type": "string",
+                    "description": "The ARN of the table"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the table"
+                },
+                "table_id": {
+                    "type": "string",
+                    "description": "Another identifier for the table. Perhaps its a legacy parameter?"
+                },
+                "stream_arn": {
+                    "type": "string",
+                    "description": "The ARN of the table's stream. Present if stream is enabled"
+                },
+                "stream_label": {
+                    "type": "string",
+                    "description": "A label for the stream"
+                }
+            }
+        }
+    }
+}
