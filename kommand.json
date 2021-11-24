@@ -3,6 +3,7 @@
         "table": {
             "type": "ext",
             "displayname": "CK DynamoDB Table",
+            "description": "Deploys an AWS DynamoDB table. DynamoDB tables are extremely scalable NoSQL databases",
             "cloud": "AWS",
             "download_folder": true,
             "resources": ["AWS::dynamodb::table"],
@@ -52,6 +53,84 @@
                         "enum": ["S", "N", "B"],
                         "description": "An identifier for the sort key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
                         "default": "S"
+                    },
+                    "gsis": {
+                        "type": "object",
+                        "description": "A dictionary that describes the global secondary indexes for the table",
+                        "additionalProperties": {
+                            "type": "object",
+                            "description": "The name of the global secondary index",
+                            "properties": {
+                                "pkey_name": {
+                                    "type": "string",
+                                    "description": "The name of the partition key for this index"
+                                },
+                                "pkey_type": {
+                                    "type": "string",
+                                    "enum": ["S", "N", "B"],
+                                    "description": "An identifier for the index's partition key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
+                                    "default": "S"
+                                },
+                                "skey_name": {
+                                    "type": "string",
+                                    "description": "The name of the sort key for this index, if a sort key is desired"
+                                },
+                                "skey_type": {
+                                    "type": "string",
+                                    "enum": ["S", "N", "B"],
+                                    "description": "An identifier for the index's sort key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
+                                    "default": "S"
+                                },
+                                "projection_type": {
+                                    "type": "string",
+                                    "enum": ["KEYS_ONLY", "INCLUDE", "ALL"],
+                                    "description": "The set of attributes that will appear in the index",
+                                    "default": "ALL"
+                                },
+                                "projection_attributes": {
+                                    "type": "array",
+                                    "description": "A list of the non-key attributes that will appear in the index if projection_type is set to INCLUDE"
+                                },
+                                "read_capacity_units": {
+                                    "type": "integer",
+                                    "description": "Only used if billing_mode on the main table is set to PROVISIONED. See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput for details"
+                                },
+                                "write_capacity_units": {
+                                    "type": "integer",
+                                    "description": "Only used if billing_mode on the main table is set to PROVISIONED. See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput for details"
+                                }
+                            },
+                            "required": ["pkey_name"]
+                        }
+                    },
+                    "enable_stream": {
+                        "type": "boolean",
+                        "description": "Describes whether or not to enable the stream",
+                        "default": false
+                    },
+                    "stream_type": {
+                        "type": "string",
+                        "enum": ["KEYS_ONLY", "NEW_IMAGE", "OLD_IMAGE", "NEW_AND_OLD_IMAGES"],
+                        "description": "Indicates what information is written to the stream for this table",
+                        "default": "NEW_AND_OLD_IMAGES"
+                    },
+                    "billing_mode": {
+                        "type": "string",
+                        "enum": ["PAY_PER_REQUEST", "PROVISIONED"],
+                        "description": "Sets the billing mode for the table. PROVISIONED for provisioned mode and PAY_PER_REQUEST for on-demand mode",
+                        "default": "PAY_PER_REQUEST"
+                    },
+                    "read_capacity_units": {
+                        "type": "integer",
+                        "description": "Only used if billing_mode is set to PROVISIONED. See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput for details"
+                    },
+                    "write_capacity_units": {
+                        "type": "integer",
+                        "description": "Only used if billing_mode is set to PROVISIONED. See https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithTables.html#ProvisionedThroughput for details"
+                    },
+                    "tags": {
+                        "type": "object",
+                        "description": "The tags to attach to this table"
                     }
                 }
             },
