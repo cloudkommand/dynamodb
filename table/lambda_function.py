@@ -210,7 +210,7 @@ def ensure_table_not_updating(table_name):
         print(existing_table_info)
         if existing_table_info.get("TableStatus") != "ACTIVE":
             eh.add_log("Table Updating", {"table_name": table_name, "props": eh.props})
-            eh.retry_error(str(current_epoch_time_usec_num()), progress=50, callback_sec=20)
+            eh.retry_error(str(current_epoch_time_usec_num()), progress=50, callback_sec=15)
         else:
             eh.add_log("Table Finished Updating", {"table_name": table_name, "props": eh.props})
             eh.add_props({
@@ -241,6 +241,7 @@ def delete_gsis(table_name):
                 }
             }]
         )
+        eh.add_log(f"Removing GSI {index_to_delete}", {"table_name": table_name})
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "ResourceNotFoundException":
             eh.perm_error("Table Does Not Exist Anymore", 30)
