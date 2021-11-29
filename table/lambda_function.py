@@ -211,7 +211,13 @@ def ensure_table_not_updating(table_name):
         if existing_table_info.get("TableStatus") != "ACTIVE":
             eh.add_log("Table Updating", {"table_name": table_name, "props": eh.props})
             eh.retry_error(str(current_epoch_time_usec_num()), progress=50, callback_sec=20)
-
+        else:
+            eh.add_log("Table Finished Updating", {"table_name": table_name, "props": eh.props})
+            eh.add_props({
+                "table_id": existing_table_info.get("TableId"),
+                "stream_arn": existing_table_info.get("LatestStreamArn"),
+                "stream_label": existing_table_info.get("LatestStreamLabel")
+            })
 
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "ResourceNotFoundException":
@@ -302,6 +308,7 @@ def update_stream(table_name, table_info):
             TableName=table_name,
             StreamSpecification = stream_spec
         )
+        eh.add_log("Update Stream", {"stream_spec": stream_spec})
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "ResourceNotFoundException":
             eh.perm_error("Table Does Not Exist Anymore", 30)
