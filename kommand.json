@@ -114,6 +114,10 @@
                         "description": "Indicates what information is written to the stream for this table",
                         "default": "NEW_AND_OLD_IMAGES"
                     },
+                    "ttl_attribute": {
+                        "type": "string",
+                        "description": "The name of the TTL (Time-To-Live) attribute for the table"
+                    },
                     "billing_mode": {
                         "type": "string",
                         "enum": ["PAY_PER_REQUEST", "PROVISIONED"],

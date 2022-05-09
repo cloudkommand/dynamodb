@@ -90,7 +90,7 @@ def get_table(table_name, table_info, region, prev_state):
 
     if prev_state and prev_state.get("props") and prev_state.get("props").get("name"):
         prev_table_name = prev_state.get("props").get("name")
-        if table_name != prev_table_name:
+        if prev_table_name and (table_name != prev_table_name):
             eh.perm_error("Cannot Change Table Name", progress=0)
             return None
     
