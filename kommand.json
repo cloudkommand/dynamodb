@@ -5,7 +5,6 @@
             "displayname": "CK DynamoDB Table",
             "description": "Deploys an AWS DynamoDB table. DynamoDB tables are extremely scalable NoSQL databases",
             "cloud": "AWS",
-            "download_folder": true,
             "resources": ["AWS::dynamodb::table"],
             "policy": {
                 "Version": "2012-10-17",
