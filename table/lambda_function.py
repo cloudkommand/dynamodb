@@ -188,6 +188,10 @@ def get_table(table_name, table_info, region, prev_state):
             if old_tags:
                 eh.add_op("remove_tags", list(old_tags.keys()))
 
+        eh.complete_op("get_table")
+        if not eh.ops:
+            eh.add_log("No Changes to Make, Exiting", {"table_name": table_name})
+
 
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "ResourceNotFoundException":
