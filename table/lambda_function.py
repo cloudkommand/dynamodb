@@ -91,13 +91,29 @@ def get_table(table_name, table_info, region, prev_state):
     if prev_state and prev_state.get("props") and prev_state.get("props").get("name"):
         prev_table_name = prev_state.get("props").get("name")
         if prev_table_name and (table_name != prev_table_name):
-            eh.perm_error("Cannot Change Table Name", progress=0)
+            eh.perm_error("Cannot Change Table Name. If you need a differently named table, please create a new component", progress=0)
             return None
     
     try:
         existing_table_info = dynamodb.describe_table(TableName=table_name).get("Table")
         eh.add_log("Found Table", {"table_name": table_name})
-        
+
+        #Check for stuff that can't be changed
+        key_schema = existing_table_info.get("KeySchema")
+        pkey_name = list(filter(lambda x: x.get("KeyType") == "HASH", key_schema))[0].get("AttributeName")
+        if existing_table_info.get("pkey_name", "pkey") != pkey_name:
+            eh.perm_error("Cannot Change Primary Key Name. If you need to change it, please create a new component", progress=0)
+            return None
+
+        skey_dict = list(filter(lambda x: x.get("KeyType") == "RANGE", key_schema))
+        if skey_dict:
+            skey_name = skey_dict[0].get("AttributeName")
+        else:
+            skey_name = None
+        if existing_table_info.get("skey_name", "skey") != skey_name:
+            eh.perm_error("Cannot Change Sort Key Name. If you need to change it, please create a new component", progress=0)
+            return None
+
         #################################################
         # Check for GSIS
         #################################################
@@ -169,6 +185,7 @@ def get_table(table_name, table_info, region, prev_state):
             "name": table_name,
             "arn": table_arn,
             "table_id": existing_table_info.get("TableId"),
+            "all_indexes_arn": table_arn + "/index/*",
             "stream_arn": existing_table_info.get("LatestStreamArn"),
             "stream_label": existing_table_info.get("LatestStreamLabel")
         })
@@ -513,6 +530,7 @@ def create_table(table_name, table_info, region):
         "name": table_name,
         "arn": table_response.get("TableArn"),
         "table_id": table_response.get("TableId"),
+        "all_indexes_arn": table_response.get("TableArn") + "/index/*",
         "stream_arn": table_response.get("LatestStreamArn"),
         "stream_label": table_response.get("LatestStreamLabel")
     })

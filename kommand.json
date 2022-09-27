@@ -150,6 +150,10 @@
                     "type": "string",
                     "description": "Another identifier for the table. Perhaps its a legacy parameter?"
                 },
+                "all_indexes_arn": {
+                    "type": "string",
+                    "description": "The ARN of the table's GSIs (global secondary indexes). Necessary to add to IAM policies if you want to query the table on a GSI"
+                },
                 "stream_arn": {
                     "type": "string",
                     "description": "The ARN of the table's stream. Present if stream is enabled"
