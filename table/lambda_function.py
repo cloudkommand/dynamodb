@@ -110,7 +110,7 @@ def get_table(table_name, table_info, region, prev_state):
             skey_name = skey_dict[0].get("AttributeName")
         else:
             skey_name = None
-        if existing_table_info.get("skey_name", "skey") != skey_name:
+        if table_info.get("skey_name") != skey_name:
             eh.perm_error("Cannot Change Sort Key Name. If you need to change it, please create a new component", progress=0)
             return None
 
