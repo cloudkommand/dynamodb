@@ -524,7 +524,7 @@ def create_table(table_name, table_info, region):
             eh.retry_error("Limit Hit", 0)
         else:
             eh.add_log("Create Error", {"error": str(e)}, is_error=True)
-            eh.retry_error("Wait to Delete", {"error": str(e)})
+            eh.retry_error("Error Creating Table", 0)
     
     eh.add_props({
         "name": table_name,
