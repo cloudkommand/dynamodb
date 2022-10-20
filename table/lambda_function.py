@@ -219,7 +219,7 @@ def get_table(table_name, table_info, region, prev_state):
 
         else:
             eh.add_log("Get Table Failed", {"error": str(e)})
-            eh.retry_error("Failed Get", {"Exception": str(e)})
+            eh.retry_error("Failed Getting Table", {"Exception": str(e)})
 
 @ext(handler=eh, op="ensure_table_not_updating")
 def ensure_table_not_updating(table_name):
