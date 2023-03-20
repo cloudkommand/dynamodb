@@ -3,8 +3,9 @@
         "table": {
             "type": "ext",
             "displayname": "CK DynamoDB Table",
-            "description": "Deploys an AWS DynamoDB table. DynamoDB tables are extremely scalable NoSQL databases",
+            "description": "Deploys an AWS DynamoDB table. DynamoDB tables are extremely scalable NoSQL databases.",
             "cloud": "AWS",
+            "ck_plugin_tier": 1,
             "resources": ["AWS::dynamodb::table"],
             "policy": {
                 "Version": "2012-10-17",
@@ -44,21 +45,25 @@
                         "type": "string",
                         "enum": ["S", "N", "B"],
                         "description": "An identifier for the partition key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
-                        "default": "S"
+                        "default": "S",
+                        "common": true
                     },
                     "skey_name": {
                         "type": "string",
-                        "description": "The name of the sort key for the table"
+                        "description": "The name of the sort key for the table",
+                        "common": true
                     },
                     "skey_type": {
                         "type": "string",
                         "enum": ["S", "N", "B"],
                         "description": "An identifier for the sort key's type. 'S' for string, 'N' for numeric, and 'B' for bytes",
-                        "default": "S"
+                        "default": "S",
+                        "common": true
                     },
                     "gsis": {
                         "type": "object",
                         "description": "A dictionary that describes the global secondary indexes for the table",
+                        "common": true,
                         "additionalProperties": {
                             "type": "object",
                             "description": "The name of the global secondary index",
@@ -136,7 +141,8 @@
                     },
                     "tags": {
                         "type": "object",
-                        "description": "The tags to attach to this table"
+                        "description": "The tags to attach to this table",
+                        "common": true
                     }
                 }
             },
@@ -165,7 +171,52 @@
                     "type": "string",
                     "description": "A label for the stream"
                 }
-            }
+            },
+            "examples": [
+                {
+                    "displayname": "Table with Specified Key Names",
+                    "notes": "This table is deployed without a sort key, so each partition key (id) must be unique. However, it sets up multiple GSIs, each of which has a sort key. The first GSI can be used for listing items in alphabetical order, while the second GSI can be used to store logs. The second GSI is set up so that the partition never gets too large and remains queryable.",
+                    "definition": {
+                        "type": "&dynamodb.table",
+                        "pkey_name": "id",
+                        "gsis": {
+                            "gsi1": {
+                                "pkey_name": "namespace",
+                                "skey_name": "displayname"
+                            },
+                            "gsi2": {
+                                "pkey_name": "week",
+                                "pkey_type": "N",
+                                "skey_name": "timestamp"
+                            }
+                        },
+                        "tags": {
+                            "Owner": "John Doe",
+                            "Environment": "Production",
+                            "CostCenter": "1234"
+                        }
+                    }
+                },
+                {
+                    "displayname": "Table with Sort Key and TTL",
+                    "notes": "This table is deployed with a sort key, so each partition key (id) can have multiple items. It also sets up a TTL attribute, so that items can be automatically deleted after a certain amount of time. Finally, it creates a reverse GSI, a common practice for tables, so that items can be queried by their sort key.",
+                    "definition": {
+                        "type": "&dynamodb.table",
+                        "skey_name": "skey",
+                        "ttl_attribute": "ttl",
+                        "gsis": {
+                            "alt1": {
+                                "pkey_name": "alt1_pkey",
+                                "skey_name": "alt1_skey"
+                            },
+                            "reverse": {
+                                "pkey_name": "skey",
+                                "skey_name": "pkey"
+                            }
+                        }
+                    }
+                }
+            ]
         }
     }
 }
