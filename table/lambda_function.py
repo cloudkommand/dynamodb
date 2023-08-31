@@ -96,12 +96,12 @@ def get_table(table_name, table_info, region, prev_state):
     
     try:
         existing_table_info = dynamodb.describe_table(TableName=table_name).get("Table")
-        eh.add_log("Found Table", {"table_name": table_name})
+        eh.add_log("Found Table", existing_table_info)
 
         #Check for stuff that can't be changed
         key_schema = existing_table_info.get("KeySchema")
         pkey_name = list(filter(lambda x: x.get("KeyType") == "HASH", key_schema))[0].get("AttributeName")
-        if existing_table_info.get("pkey_name", "pkey") != pkey_name:
+        if table_info.get("pkey_name", "pkey") != pkey_name:
             eh.perm_error("Cannot Change Primary Key Name. If you need to change it, please create a new component", progress=0)
             return None
 
